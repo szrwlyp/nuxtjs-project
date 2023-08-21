@@ -1,43 +1,36 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-
-const navList = ref([
-  { title: '首页', to: '/' },
-  {
-    title: '解决方案',
-    children: [
-      { title: '电子政务解决方案', path: '' },
-      { title: '人大履职解决方案', path: '' },
-      { title: '食药监管解决方案', path: '' },
-      { title: '智能化工程解决方案', path: '' },
-    ],
-  },
-  {
-    title: '关于超创',
-    children: [
-      { title: '公司简介', path: '' },
-      { title: '企业文化', path: '' },
-      { title: '资质荣誉', path: '' },
-      { title: '招贤纳士', path: '' },
-      { title: '合作伙伴', path: '' },
-    ],
-  },
-  { title: '联系我们' },
-])
+// import useRouter from 'vue-router'
+import { navList } from '@/assets/js/publicConfig'
+// const router = new useRouter()
 
 // 当前选中的nav
-const navCurrentIndex = ref(0)
+const navCurrentIndex = ref(-1)
 const isShowBg = ref(false)
-const openNav = (i: number, isChilder: boolean) => {
+const openNav = (i: number, item: any) => {
   navCurrentIndex.value = i
-  console.log(i)
-  isShowBg.value = isChilder
+  console.log(item)
+
+  isShowBg.value = !!item?.children?.length
+  // if (!item?.children?.length) {
+  //   window.location.hash = item.path
+  // }
 }
 const closeNav = () => {
-  navCurrentIndex.value = 100
+  console.log('aaa')
+  navCurrentIndex.value = -1
   isShowBg.value = false
   console.log(navCurrentIndex.value)
 }
+
+// 监听路由变化
+// watch(
+//   () => router,
+//   (to) => {
+//     console.log(to)
+//   },
+//   { flush: 'pre', immediate: true, deep: true }
+// )
 </script>
 
 <template>
@@ -49,14 +42,28 @@ const closeNav = () => {
         </div>
         <MenuComp></MenuComp>
         <nav class="cc-navbar">
-          <ul>
+          <ul class="cc-navbar-ul">
             <template v-for="(item, index) in navList">
               <li
                 :key="index"
                 :class="[navCurrentIndex === index ? 'select' : '']"
-                @click="openNav(index, item.children ? true : false)"
+                class="cc-navbar-li"
               >
-                <div class="title">{{ item.title }}</div>
+                <div class="nav-title" @click.stop="openNav(index, item)">
+                  <!-- {{ item.title }} -->
+                  <template v-if="!item?.children?.length">
+                    <nuxt-link :to="item?.path" class="nav-title-link">{{
+                      item.title
+                    }}</nuxt-link>
+                  </template>
+                  <template v-else>
+                    {{ item.title }}
+                  </template>
+                  <span
+                    v-if="item.children"
+                    class="children-menu-icon iconfont icon-arrow-below"
+                  ></span>
+                </div>
                 <div v-if="item.children" class="nav-children">
                   <div class="c-list">
                     <div
@@ -64,9 +71,31 @@ const closeNav = () => {
                       :key="c_index"
                       class="c-title"
                     >
-                      <router-link :to="child.path" class="c-title-span">{{
-                        child.title
-                      }}</router-link>
+                      <template v-if="child?.children">
+                        <div class="cc-title">{{ child.title }}</div>
+                        <ul class="cc-list">
+                          <li
+                            v-for="(cc_item, cc_index) of child.children"
+                            :key="cc_index"
+                          >
+                            <!-- {{ cc_item.title }} -->
+                            <nuxt-link
+                              :to="cc_item.path"
+                              class="cc-link-a"
+                              @click.native="closeNav"
+                              >{{ cc_item.title }}</nuxt-link
+                            >
+                          </li>
+                        </ul>
+                      </template>
+
+                      <nuxt-link
+                        v-else
+                        :to="child.path"
+                        class="c-title-span"
+                        @click.native="closeNav"
+                        >{{ child.title }}</nuxt-link
+                      >
                     </div>
                     <!-- <router-link
                     v-for="(child, index) in item.children"
@@ -75,7 +104,10 @@ const closeNav = () => {
                     >{{ child.title }}</router-link
                   > -->
                   </div>
-                  <span class="close-icon" @click.stop="closeNav">X</span>
+                  <span
+                    class="close-icon iconfont icon-close"
+                    @click.stop="closeNav"
+                  ></span>
                 </div>
               </li>
             </template>
@@ -128,18 +160,36 @@ header {
     .cc-navbar {
       display: block;
       height: 100%;
-      ul {
+      .cc-navbar-ul {
         display: flex;
         height: 100%;
 
-        li {
-          padding: 0 20px;
+        .cc-navbar-li {
           position: relative;
-          .title {
+          .nav-title {
             cursor: pointer;
             display: flex;
             align-items: center;
             height: 100%;
+            position: relative;
+            padding: 0 26px;
+            .nav-title-link {
+              color: #333;
+              text-decoration: none;
+            }
+            &:hover {
+              .children-menu-icon {
+                /* opacity: 1; */
+                display: block;
+              }
+            }
+            .children-menu-icon {
+              font-size: 20px;
+              /* opacity: 0; */
+              display: none;
+              position: absolute;
+              right: 0px;
+            }
           }
           .nav-children {
             width: 100%;
@@ -154,6 +204,7 @@ header {
               display: flex;
               width: 70%;
               margin: auto;
+              font-size: 19px;
               .c-title {
                 flex: 1;
                 padding: 0 20px;
@@ -161,13 +212,30 @@ header {
                   cursor: pointer;
                   color: #333333;
                 }
+                .cc-title {
+                  padding-bottom: 8px;
+                  border-bottom: 1px solid #d4d4d4;
+                }
+                .cc-list {
+                  font-size: 0.9em;
+                  margin-top: 6px;
+
+                  li {
+                    padding: 4px 0;
+                    cursor: pointer;
+                    .cc-link-a {
+                      color: #333;
+                      opacity: 0.8;
+                    }
+                  }
+                }
               }
             }
             .close-icon {
               position: absolute;
               right: 90px;
-              top: 10px;
-              font-size: 24px;
+              top: 3px;
+              font-size: 30px;
               cursor: pointer;
             }
           }

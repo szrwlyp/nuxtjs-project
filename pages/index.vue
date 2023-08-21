@@ -87,7 +87,7 @@ const data = ref([
 <style scoped lang="scss">
 .main-index {
   margin: 0 auto;
-  width: 1200px;
+  width: 1500px;
   padding: 15px;
   .tuijian {
     font-size: 16px;
@@ -107,6 +107,17 @@ const data = ref([
           height: 100%;
           cursor: pointer;
           &:hover {
+            .img-box {
+              img {
+                transform: scale(1.1);
+              }
+              .mask {
+                background: linear-gradient(
+                  rgba(0, 0, 0, 0) 0%,
+                  rgba(0, 0, 0, 0.7) 70%
+                );
+              }
+            }
             .text-box {
               bottom: 0px;
               .read-more {

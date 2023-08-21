@@ -10,18 +10,20 @@
       </ul>
       <div class="contact">
         <div class="contact-phone">
-          <img
+          <span class="iconfont icon-phone phone"></span>
+          <!-- <img
             src="https://www.chaochuang.com.cn/style/images/icon-phone.png"
             alt=""
-          />
+          /> -->
           <div>400-070-7770</div>
         </div>
         <span style="margin: 0 16px">|</span>
-        <img
+        <span class="contact-weixin iconfont icon-weixin"></span>
+        <!-- <img
           src="https://www.chaochuang.com.cn/style/images/wechat-default.png"
           alt=""
-          class="contact-weixin"
-        />
+          class="contact-weixin icon-weixin"
+        /> -->
       </div>
     </div>
     <div class="copy">
@@ -50,23 +52,30 @@
     .nav-ul {
       display: flex;
       font-size: 1.1em;
+      align-items: center;
       li {
-        padding-right: 20px;
+        padding-right: 50px;
       }
     }
     .contact {
       display: flex;
+      align-items: center;
       .contact-phone {
         display: flex;
         align-items: center;
-        img {
+        .phone {
+          font-size: 27px;
+          margin-right: 4px;
+        }
+        /* img {
           width: 30px;
           height: 30px;
-        }
+        } */
       }
       .contact-weixin {
-        width: 30px;
-        height: 30px;
+        /* width: 30px;
+        height: 30px; */
+        font-size: 30px;
       }
     }
   }
@@ -74,7 +83,7 @@
     background: #e6e6e6;
     color: #666;
     display: flex;
-    padding: 15px;
+    padding: 23px;
     justify-content: center;
     font-size: 0.9em;
     .center-gap {

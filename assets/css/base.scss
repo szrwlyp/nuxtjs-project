@@ -3,4 +3,10 @@ li {
   list-style-type: none;
   margin: 0px;
   padding: 0px;
+  // pointer-events: none;
+}
+
+.nav-link-style {
+  color: #333;
+  text-decoration: none;
 }

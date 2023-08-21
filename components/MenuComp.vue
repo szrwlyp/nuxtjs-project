@@ -1,8 +1,30 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { navList } from '@/assets/js/publicConfig'
 const isClose = ref(false)
 const navbarToggle = () => {
   isClose.value = !isClose.value
+  if (isClose.value) {
+    document.body.style.overflow = 'hidden'
+  } else {
+    document.body.style.overflow = 'auto'
+    childrenMenuStatus.value = false
+  }
+}
+
+const jumpPage = (param: any) => {
+  console.log(param)
+  if (param?.children?.length) {
+    childrenMenu.value = param.children
+    childrenMenuStatus.value = true
+  }
+}
+
+// 子菜单
+const childrenMenu = ref()
+const childrenMenuStatus = ref(false)
+const backMenu = () => {
+  childrenMenuStatus.value = false
 }
 </script>
 
@@ -18,7 +40,73 @@ const navbarToggle = () => {
       <span class="icon-bar"></span>
     </button>
 
-    <div class="fluid-container" :class="{ 'show-fluid': isClose }"></div>
+    <!-- 移动端菜单 -->
+    <div class="fluid-container" :class="{ 'show-fluid': isClose }">
+      <ul>
+        <li
+          v-for="(item, index) in navList"
+          :key="index"
+          @click="jumpPage(item)"
+        >
+          <div>
+            <template v-if="item?.path">
+              <nuxt-link
+                class="nav-link-style"
+                :to="item.path"
+                @click.native="navbarToggle"
+                >{{ item.title }}</nuxt-link
+              >
+            </template>
+            <template v-else>
+              <div>
+                {{ item.title }}
+              </div>
+            </template>
+          </div>
+          <span
+            v-if="item?.children?.length"
+            class="iconfont icon-arrow-right"
+          ></span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 子菜单 -->
+    <div
+      class="fluid-container fluid-container-children"
+      :class="{ 'show-fluid': isClose && childrenMenuStatus }"
+    >
+      <div class="back-menu" @click="backMenu">
+        <span class="iconfont icon-back-arrow"></span>返回主菜单
+      </div>
+      <ul>
+        <li
+          v-for="(item, index) in childrenMenu"
+          :key="index"
+          @click="jumpPage(item)"
+        >
+          <div>
+            <template v-if="item.path">
+              <nuxt-link
+                class="nav-link-style"
+                :to="item.path"
+                @click.native="navbarToggle"
+                >{{ item.title }}</nuxt-link
+              >
+            </template>
+            <template v-else>
+              <div>
+                {{ item.title }}
+              </div>
+            </template>
+          </div>
+          <span
+            v-if="item?.children?.length"
+            class="iconfont icon-arrow-right"
+          ></span>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -29,17 +117,47 @@ const navbarToggle = () => {
   .fluid-container {
     position: fixed;
     top: 66px;
-    right: 0;
-    width: 0;
+    right: -100vw;
+    width: 100vw;
     height: 100vh;
     background: #f2f2f2;
     /* opacity: 0; */
+    transition: all 0.3s ease-in-out;
+    ul {
+      padding: 15px 15px 0 15px;
+      li {
+        /* margin: 0 15px; */
+        border-bottom: 1px solid #d4d4d4;
+        display: flex;
+        justify-content: space-between;
+        padding: 15px 0;
+        align-items: center;
+        cursor: pointer;
+        .icon-arrow-right {
+          font-size: 20px;
+        }
+      }
+    }
+  }
 
-    transition: all 0.6s ease-in-out;
+  .fluid-container-children {
+    .back-menu {
+      padding: 15px 15px 0 15px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      span {
+        font-size: 22px;
+        transform: rotate(180deg);
+        display: block;
+        padding: 0 3px;
+      }
+    }
   }
   .show-fluid {
     /* opacity: 1; */
-    width: 100vw;
+    /* width: 100vw; */
+    right: 0;
   }
 
   .navbar-toggle {
